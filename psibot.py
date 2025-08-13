@@ -7,11 +7,16 @@ from datetime import date
 from pathlib import Path
 import shutil
 
-# --- Configuração da API ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     st.error("⚠️ API Key da OpenAI não encontrada.")
     st.stop()
+
+# Define a variável de ambiente para garantir compatibilidade com o client
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+# Cria o client sem passar api_key diretamente
+client = OpenAI()
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 # --- Parametrização de áudio ---
@@ -234,4 +239,5 @@ Sugestões para o próximo atendimento
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
