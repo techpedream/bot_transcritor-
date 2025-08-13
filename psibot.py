@@ -148,10 +148,9 @@ if st.button("🚀 Gerar Relatório") and audio_file:
     # 5) Gerar relatório com GPT (sem mostrar a transcrição na tela)
     with st.spinner("Gerando relatório com IA... ✨"):
         prompt = f"""
-Você é um psicólogo especializado em Terapia de Aceitação e Compromisso (ACT) e Terapia Cognitivo-Comportamental (TCC). Sua tarefa é ler a transcrição abaixo e gerar um relatório clínico detalhado seguindo o modelo a seguir. Use somente informações presentes na transcrição. Não invente dados, não preencha campos que não estejam claros.
-Seja claro, objetivo e profissional. Escreva em português do Brasil.
+Você é um psicólogo clínico experiente. Sua tarefa é gerar um relatório detalhado a partir da transcrição completa da sessão abaixo. Use somente informações presentes na transcrição. Não invente dados e não preencha campos que não estejam claros. Escreva em português do Brasil, de forma clara, objetiva e profissional, sem mencionar nomes de abordagens terapêuticas ou siglas como TCC, ACT, etc.
 
-Estruture exatamente neste formato:
+Estruture o relatório exatamente neste formato:
 
 REGISTRO DOCUMENTAL
 Paciente: {nome_paciente}
@@ -162,37 +161,35 @@ Supervisor: {nome_supervisor}
 
 Estrutura do relatório:
 
-Relato
-[Descreva de forma objetiva e completa o principal relato do paciente na sessão, resumindo os pontos centrais abordados.]
+1. Relato
+- Descreva de forma completa e detalhada o principal relato do paciente.
+- Inclua informações sobre sentimentos, pensamentos, comportamentos, preocupações e contextos relevantes mencionados.
+- Resuma os pontos centrais, mantendo riqueza de detalhes.
+- Evite interpretações ou opiniões nesta seção; foque em relatar o que o paciente expressou.
 
-Análise do Relato / Hipóteses iniciais
-[Analise o conteúdo do relato considerando conceitos da ACT (valores, aceitação, defusão, atenção ao momento presente, self como contexto, ação comprometida) e da TCC (pensamentos automáticos, crenças centrais, esquemas). Aponte hipóteses clínicas iniciais baseadas no que o paciente expressa. Inclua observações sobre temas recorrentes, por exemplo, se o tema de solidão ou outro se intensifica no contexto.]
+2. Análise do Relato / Hipóteses iniciais
+- Analise cada ponto relevante do relato de forma clínica e profissional.
+- Destaque padrões emocionais, comportamentais e cognitivos, conflitos internos, preocupações recorrentes e possíveis gatilhos.
+- Aponte hipóteses clínicas iniciais baseadas no que o paciente expressa.
+- Inclua recomendações de estratégias terapêuticas sem mencionar a abordagem utilizada.
 
-Exame do Estado Mental do Paciente
-
+3. Exame do Estado Mental do Paciente
 Estado emocional atual (última semana): [descrever]
-
 Estado de saúde atual (última semana): [descrever]
-
 Aspectos do paciente na entrevista: [descrever]
-
 Comunicação com os estagiários: [descrever]
-
 Sentimentos verbalizados ou demonstrados: [descrever]
-
 Consciência: [descrever]
-
 Conduta: [descrever]
-
 Linguagem: [descrever]
-
 Pensamento: [descrever]
 
-Observações gerais
-[Inclua aqui qualquer observação adicional relevante identificada na transcrição.]
+4. Observações gerais
+- Inclua aqui qualquer observação adicional relevante identificada na transcrição.
 
-Sugestões para o próximo atendimento
-[Forneça recomendações práticas e objetivas para a próxima sessão, alinhadas à ACT e TCC, como exercícios, psicoeducação, práticas de mindfulness, registros de pensamentos, ou exploração de valores.]
+5. Sugestões para o próximo atendimento
+- Forneça recomendações práticas e objetivas para a próxima sessão, como exercícios, psicoeducação, práticas de mindfulness, registros de pensamentos ou exploração de valores, **sem citar qualquer abordagem terapêutica específica**.
+
 === TRANSCRIÇÃO COMPLETA ===
 {texto_transcrito}
 """
@@ -239,6 +236,7 @@ Sugestões para o próximo atendimento
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
