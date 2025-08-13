@@ -104,7 +104,7 @@ def transcrever_em_partes(partes: list) -> str:
 # -------- App --------
 st.title("🧠 Gerador de Relatório de Psicoterapia")
 
-audio_file = st.file_uploader("🎤 Envie o áudio da sessão", type=ALLOWED_TYPES)
+audio_file = st.file_uploader("🎤 Envie o áudio da sessão", type=None)
 nome_paciente = st.text_input("🧍 Nome do Paciente")
 idade_paciente = st.text_input("📅 Idade do Paciente")
 numero_sessao = st.text_input("🔢 Número da Sessão")
@@ -236,6 +236,7 @@ Pensamento: [descrever]
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
