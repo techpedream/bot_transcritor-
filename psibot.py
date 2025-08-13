@@ -8,12 +8,12 @@ from pathlib import Path
 import shutil
 
 # --- Configuração da API ---
-OPENAI_API_KEY = st.secrets.get("OPENAI_API_KEY") or os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     st.error("⚠️ API Key da OpenAI não encontrada.")
     st.stop()
-client = OpenAI(api_key=OPENAI_API_KEY)
 
+client = OpenAI(api_key=OPENAI_API_KEY)
 # --- Parametrização de áudio ---
 from pydub import AudioSegment
 from pathlib import Path
@@ -234,3 +234,4 @@ Sugestões para o próximo atendimento
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
