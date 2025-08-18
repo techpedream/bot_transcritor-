@@ -222,7 +222,7 @@ Ex.: “Registrar 1 episódio por dia usando ABC em situações de X, por 7 dias
 Ex.: “Praticar 2 minutos de respiração diafragma após [evento gatilho] por 1 semana.”
 Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e executar.”
 
-6. Escreva modelo Thiago trazendo, depois de tudo resumido:
+6. E por fim, escreva, de forma resumida:
 
 Queixa principal ou tema da sessão:
 Intervenções realizadas:
@@ -275,6 +275,7 @@ Evolução do paciente:
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
