@@ -204,14 +204,10 @@ Alternativas/Falsificadores: [o que mudaria a hipótese]
 3. Exame do estado mental (com base no que foi dito)
 
 Estado emocional atual (última semana): [descrever / não mencionado]
-Estado de saúde atual (última semana): [descrever / não mencionado]
 Aspectos do paciente na entrevista: [descrever / não mencionado]
 Comunicação com os estagiários: [descrever / não mencionado]
 Sentimentos verbalizados ou demonstrados: [descrever / não mencionado]
-Consciência: [descrever / não mencionado]
-Conduta: [descrever / não mencionado]
 Linguagem: [descrever / não mencionado]
-Pensamento: [descrever / não mencionado]
 
 4. Observações gerais
 
@@ -225,6 +221,13 @@ Liste recomendações comportamentais claras, sem citar abordagens:
 Ex.: “Registrar 1 episódio por dia usando ABC em situações de X, por 7 dias.”
 Ex.: “Praticar 2 minutos de respiração diafragma após [evento gatilho] por 1 semana.”
 Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e executar.”
+
+6. Escreva modelo Thiago trazendo, depois de tudo resumido:
+
+Queixa principal ou tema da sessão:
+Intervenções realizadas:
+Evolução do paciente:
+
 
 === TRANSCRIÇÃO COMPLETA ===
 {texto_transcrito}
@@ -272,6 +275,7 @@ Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e e
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
