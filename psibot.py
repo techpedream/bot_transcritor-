@@ -148,47 +148,83 @@ if st.button("🚀 Gerar Relatório") and audio_file:
     # 5) Gerar relatório com GPT (sem mostrar a transcrição na tela)
     with st.spinner("Gerando relatório com IA... ✨"):
         prompt = f"""
-Você é um psicólogo clínico experiente. Sua tarefa é gerar um relatório detalhado a partir da transcrição completa da sessão abaixo. Use somente informações presentes na transcrição. Não invente dados e não preencha campos que não estejam claros. Escreva em português do Brasil, de forma clara, objetiva e profissional, sem mencionar nomes de abordagens terapêuticas ou siglas como TCC, ACT, etc.
+Você é um psicólogo clínico com foco em descrição comportamental e análise funcional. Gere um relatório descritivo e operacional a partir da transcrição completa da sessão abaixo.
+Use apenas informações da transcrição. Não invente dados. Não diagnose. Evite termos circulares e “ficções explicativas”. Quando a informação não estiver presente, escreva literalmente “não mencionado”.
 
-Estruture o relatório exatamente neste formato:
+Estilo e regras de escrita
+
+Priorize comportamentos observáveis, contexto e consequências (ABC).
+
+Atribua estados internos como relatos do paciente: use “o paciente relata…”, “refere…”.
+
+Evite jargões e termos circulares (ex.: regressão, mecanismo de defesa, traços, personalidade frágil, autoconceito danificado, mente subconsciente).
+
+Não nomeie abordagens terapêuticas ou siglas.
+
+Frases curtas, voz ativa, linguagem clara e específica (verbo de ação + contexto + frequência/duração quando disponível).
+
+Hipóteses devem ser marcadas como “Hipótese de trabalho”, sempre com evidências textuais e nível de confiança (Baixo/Moderado/Alto).
+
+FORMATO DE SAÍDA (obrigatório)
 
 REGISTRO DOCUMENTAL
 Paciente: {nome_paciente}
 Idade: {idade_paciente}
-Data: {data_sessao.strftime('%d/%m/%Y')}    Sessão: {numero_sessao}
+Data: {data_sessao.strftime('%d/%m/%Y')} Sessão: {numero_sessao}
 Acadêmicos: {nome_psicologo}
 Supervisor: {nome_supervisor}
 
-Estrutura do relatório:
+1. Relato do paciente (descritivo)
 
-1. Relato
-- Descreva de forma completa e detalhada o principal relato do paciente.
-- Inclua informações sobre sentimentos, pensamentos, comportamentos, preocupações e contextos relevantes mencionados.
-- Resuma os pontos centrais, mantendo riqueza de detalhes.
-- Evite interpretações ou opiniões nesta seção; foque em relatar o que o paciente expressou.
+Contextos/Antecedentes (A): [situações, locais, pessoas, eventos “antes de”]
 
-2. Análise do Relato / Hipóteses iniciais
-- Analise cada ponto relevante do relato de forma clínica e profissional.
-- Destaque padrões emocionais, comportamentais e cognitivos, conflitos internos, preocupações recorrentes e possíveis gatilhos.
-- Aponte hipóteses clínicas iniciais baseadas no que o paciente expressa.
-- Inclua recomendações de estratégias terapêuticas sem mencionar a abordagem utilizada.
+Respostas/Comportamentos (B): [o que fez/disse; frequência/intensidade/duração se citadas]
 
-3. Exame do Estado Mental do Paciente
-Estado emocional atual (última semana): [descrever]
-Estado de saúde atual (última semana): [descrever]
-Aspectos do paciente na entrevista: [descrever]
-Comunicação com os estagiários: [descrever]
-Sentimentos verbalizados ou demonstrados: [descrever]
-Consciência: [descrever]
-Conduta: [descrever]
-Linguagem: [descrever]
-Pensamento: [descrever]
+Consequências (C): [o que ocorreu depois; reações de outros; efeitos imediatos]
+
+Estados internos relatados: [sentimentos/pensamentos como relatos, não como causas]
+
+Observação: use trechos curtos entre aspas quando relevante.
+
+2. Análise descritiva e hipóteses de trabalho
+
+Padrões observáveis: [relações A→B→C recorrentes; gatilhos relatados]
+
+Variáveis contextuais relevantes: [horário, ambiente, pessoas, condições]
+
+Lacunas de informação: [perguntas objetivas a esclarecer]
+
+Hipóteses de trabalho (se houver):
+
+Hipótese: [enunciado operacional, sem rótulos diagnósticos]
+Evidências da transcrição: [itens específicos]
+Nível de confiança: [Baixo/Moderado/Alto]
+Alternativas/Falsificadores: [o que mudaria a hipótese]
+
+3. Exame do estado mental (com base no que foi dito)
+
+Estado emocional atual (última semana): [descrever / não mencionado]
+Estado de saúde atual (última semana): [descrever / não mencionado]
+Aspectos do paciente na entrevista: [descrever / não mencionado]
+Comunicação com os estagiários: [descrever / não mencionado]
+Sentimentos verbalizados ou demonstrados: [descrever / não mencionado]
+Consciência: [descrever / não mencionado]
+Conduta: [descrever / não mencionado]
+Linguagem: [descrever / não mencionado]
+Pensamento: [descrever / não mencionado]
 
 4. Observações gerais
-- Inclua aqui qualquer observação adicional relevante identificada na transcrição.
 
-5. Sugestões para o próximo atendimento
-- Forneça recomendações práticas e objetivas para a próxima sessão, como exercícios, psicoeducação, práticas de mindfulness, registros de pensamentos ou exploração de valores, **sem citar qualquer abordagem terapêutica específica**.
+[observações adicionais objetivas; sem rótulos diagnósticos]
+
+5. Sugestões para o próximo atendimento (operacionais)
+
+Liste recomendações comportamentais claras, sem citar abordagens:
+
+[Ação] + [Contexto] + [Frequência/Duração] + [Critério de sucesso].
+Ex.: “Registrar 1 episódio por dia usando ABC em situações de X, por 7 dias.”
+Ex.: “Praticar 2 minutos de respiração diafragma após [evento gatilho] por 1 semana.”
+Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e executar.”
 
 === TRANSCRIÇÃO COMPLETA ===
 {texto_transcrito}
@@ -236,6 +272,7 @@ Pensamento: [descrever]
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
