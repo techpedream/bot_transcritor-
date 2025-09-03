@@ -148,24 +148,27 @@ if st.button("🚀 Gerar Relatório") and audio_file:
     # 5) Gerar relatório com GPT (sem mostrar a transcrição na tela)
     with st.spinner("Gerando relatório com IA... ✨"):
         prompt = f"""
-Você é um psicólogo clínico com foco em descrição comportamental e análise funcional. Gere um relatório descritivo e operacional a partir da transcrição completa da sessão abaixo.
-Use apenas informações da transcrição. Não invente dados. Não diagnose. Evite termos circulares e “ficções explicativas”. Quando a informação não estiver presente, escreva literalmente “não mencionado”.
+Você é um psicólogo clínico com foco em descrição comportamental e análise funcional.
 
-Estilo e regras de escrita
+Sua tarefa é gerar um relatório descritivo e operacional a partir da transcrição da sessão, que está dividida em partes [PARTE 1], [PARTE 2], etc.
 
-Priorize comportamentos observáveis, contexto e consequências (ABC).
+⚠️ Regras importantes:
+- Considere TODAS as partes igualmente, da primeira até a última. Não priorize apenas o início.
+- Extraia informações relevantes de CADA parte antes de consolidar.
+- Se um tema aparece só no final, registre no relatório também.
+- Use apenas informações presentes na transcrição. Não invente dados. Não diagnostique.
+- Evite termos circulares e “ficções explicativas”.
+- Quando a informação não estiver presente, escreva literalmente “não mencionado”.
 
-Atribua estados internos como relatos do paciente: use “o paciente relata…”, “refere…”.
+Estilo e regras de escrita:
+- Priorize comportamentos observáveis, contexto e consequências (ABC).
+- Faça o ABC do COMPORTAMENTO RELATADO, ao invés do ABC do RELATO. Importante entender o que o paciente traz no relato. A contingência direta descrita e não a contingencia verbal apenas.
+- Estados internos sempre como relato: “o paciente relata…”.
+- Frases curtas, voz ativa, linguagem clara.
+- Hipóteses devem ser marcadas como “Hipótese de trabalho”, com evidências e nível de confiança (Baixo/Moderado/Alto).
+- Não cite siglas de abordagens terapêuticas.
 
-Evite jargões e termos circulares (ex.: regressão, mecanismo de defesa, traços, personalidade frágil, autoconceito danificado, mente subconsciente).
-
-Não nomeie abordagens terapêuticas ou siglas.
-
-Frases curtas, voz ativa, linguagem clara e específica (verbo de ação + contexto + frequência/duração quando disponível).
-
-Hipóteses devem ser marcadas como “Hipótese de trabalho”, sempre com evidências textuais e nível de confiança (Baixo/Moderado/Alto).
-
-FORMATO DE SAÍDA (obrigatório)
+FORMATO DE SAÍDA (obrigatório):
 
 REGISTRO DOCUMENTAL
 Paciente: {nome_paciente}
@@ -196,18 +199,18 @@ Lacunas de informação: [perguntas objetivas a esclarecer]
 
 Hipóteses de trabalho (se houver):
 
-Hipótese: [enunciado operacional, sem rótulos diagnósticos]
-Evidências da transcrição: [itens específicos]
-Nível de confiança: [Baixo/Moderado/Alto]
-Alternativas/Falsificadores: [o que mudaria a hipótese]
+Hipótese: [enunciado operacional, sem rótulos diagnósticos]  
+Evidências da transcrição: [itens específicos]  
+Nível de confiança: [Baixo/Moderado/Alto]  
+Alternativas/Falsificadores: [o que mudaria a hipótese]  
 
 3. Exame do estado mental (com base no que foi dito)
 
-Estado emocional atual (última semana): [descrever / não mencionado]
-Aspectos do paciente na entrevista: [descrever / não mencionado]
-Comunicação com os estagiários: [descrever / não mencionado]
-Sentimentos verbalizados ou demonstrados: [descrever / não mencionado]
-Linguagem: [descrever / não mencionado]
+Estado emocional atual (última semana): [descrever / não mencionado]  
+Aspectos do paciente na entrevista: [descrever / não mencionado]  
+Comunicação com os estagiários: [descrever / não mencionado]  
+Sentimentos verbalizados ou demonstrados: [descrever / não mencionado]  
+Linguagem: [descrever / não mencionado]  
 
 4. Observações gerais
 
@@ -217,16 +220,16 @@ Linguagem: [descrever / não mencionado]
 
 Liste recomendações comportamentais claras, sem citar abordagens:
 
-[Ação] + [Contexto] + [Frequência/Duração] + [Critério de sucesso].
-Ex.: “Registrar 1 episódio por dia usando ABC em situações de X, por 7 dias.”
-Ex.: “Praticar 2 minutos de respiração diafragma após [evento gatilho] por 1 semana.”
-Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e executar.”
+[Ação] + [Contexto] + [Frequência/Duração] + [Critério de sucesso].  
+Ex.: “Registrar 1 episódio por dia usando ABC em situações de X, por 7 dias.”  
+Ex.: “Praticar 2 minutos de respiração diafragma após [evento gatilho] por 1 semana.”  
+Ex.: “Planejar 3 atividades prazerosas específicas para [dias/horários], e executar.”  
 
-6. E por fim, escreva, de forma resumida:
+6. Resumo final (obrigatório)
 
-Queixa principal ou tema da sessão:
-Intervenções realizadas:
-Evolução do paciente:
+Queixa principal ou tema da sessão:  
+Intervenções realizadas:  
+Evolução do paciente:  
 
 
 === TRANSCRIÇÃO COMPLETA ===
@@ -275,6 +278,7 @@ Evolução do paciente:
                 shutil.rmtree(p, ignore_errors=True)
     except Exception:
         pass
+
 
 
 
