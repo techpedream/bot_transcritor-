@@ -1,6 +1,12 @@
+# Interface web
 streamlit==1.30.0
-openai>=1.0.0
-python-docx>=0.8.11
+
+# OpenAI SDK
+openai>=1.30.0
+
+# Manipulação de documentos Word
+python-docx==1.2.0
+
+# Áudio
 pydub==0.25.1
 ffmpeg-python==0.2.0
-
