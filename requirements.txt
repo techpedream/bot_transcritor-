@@ -7,4 +7,5 @@ openai>=1.30.0
 # Manipulação de documentos Word
 python-docx==1.2.0
 
-# Áudio (ffmpeg deve estar instalado no sistema)
+# Áudio (ffmpeg embutido via imageio-ffmpeg, sem dependência do sistema)
+imageio-ffmpeg>=0.4.9

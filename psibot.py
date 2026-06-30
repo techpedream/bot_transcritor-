@@ -3,11 +3,14 @@ from openai import OpenAI
 from docx import Document
 import tempfile
 import os
+import re
 import subprocess
-import json
 from datetime import date
 from pathlib import Path
 import shutil
+import imageio_ffmpeg
+
+FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 
 # --- Configuração da API ---
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -29,10 +32,10 @@ BITRATE = "48k"          # MP3 leve
 ALLOWED_TYPES = ["mp3", "m4a", "wav", "ogg"]
 
 def converter_para_mp3_mono16k(caminho_entrada: str) -> str:
-    """Converte qualquer áudio para MP3, 16 kHz, mono, bitrate baixo."""
+    """Converte qualquer áudio/vídeo para MP3, 16 kHz, mono, bitrate baixo."""
     caminho_saida = Path(caminho_entrada).with_suffix("").as_posix() + "_proc.mp3"
     result = subprocess.run(
-        ["ffmpeg", "-y", "-i", caminho_entrada,
+        [FFMPEG, "-y", "-i", caminho_entrada,
          "-ar", str(TARGET_SR), "-ac", "1", "-b:a", BITRATE, caminho_saida],
         capture_output=True
     )
@@ -42,14 +45,17 @@ def converter_para_mp3_mono16k(caminho_entrada: str) -> str:
     return caminho_saida
 
 def duracao_segundos(caminho: str) -> float:
-    """Retorna a duração do áudio em segundos via ffprobe."""
+    """Retorna duração em segundos usando ffmpeg (sem ffprobe)."""
     try:
         result = subprocess.run(
-            ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", caminho],
-            capture_output=True, text=True, check=True
+            [FFMPEG, "-i", caminho],
+            capture_output=True, text=True
         )
-        info = json.loads(result.stdout)
-        return float(info["format"]["duration"])
+        match = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.?\d*)", result.stderr)
+        if match:
+            h, m, s = match.groups()
+            return int(h) * 3600 + int(m) * 60 + float(s)
+        return 0.0
     except Exception:
         return 0.0
 
@@ -68,7 +74,7 @@ def fatiar_audio(path_mp3: str, segundos_por_parte: int = SEGUNDO_POR_PARTE) -> 
             i += 1
             caminho_parte = str(out_dir / f"parte_{i:03d}.mp3")
             subprocess.run(
-                ["ffmpeg", "-y", "-i", path_mp3,
+                [FFMPEG, "-y", "-i", path_mp3,
                  "-ss", str(start), "-t", str(segundos_por_parte),
                  "-b:a", BITRATE, caminho_parte],
                 check=True, capture_output=True
