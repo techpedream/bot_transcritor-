@@ -1,4 +1,4 @@
-import streamlit as st
+e v     import streamlit as st
 from openai import OpenAI
 from docx import Document
 import tempfile
@@ -31,16 +31,15 @@ ALLOWED_TYPES = ["mp3", "m4a", "wav", "ogg"]
 def converter_para_mp3_mono16k(caminho_entrada: str) -> str:
     """Converte qualquer áudio para MP3, 16 kHz, mono, bitrate baixo."""
     caminho_saida = Path(caminho_entrada).with_suffix("").as_posix() + "_proc.mp3"
-    try:
-        subprocess.run(
-            ["ffmpeg", "-y", "-i", caminho_entrada,
-             "-ar", str(TARGET_SR), "-ac", "1", "-b:a", BITRATE, caminho_saida],
-            check=True, capture_output=True
-        )
-        return caminho_saida
-    except Exception as e:
-        print(f"Erro ao converter áudio: {e}")
-        return None
+    result = subprocess.run(
+        ["ffmpeg", "-y", "-i", caminho_entrada,
+         "-ar", str(TARGET_SR), "-ac", "1", "-b:a", BITRATE, caminho_saida],
+        capture_output=True
+    )
+    if result.returncode != 0:
+        stderr = result.stderr.decode("utf-8", errors="replace")
+        raise RuntimeError(f"ffmpeg erro (código {result.returncode}):\n{stderr[-1000:]}")
+    return caminho_saida
 
 def duracao_segundos(caminho: str) -> float:
     """Retorna a duração do áudio em segundos via ffprobe."""
@@ -263,11 +262,11 @@ Evolução do paciente:
                 messages=[{"role": "user", "content": prompt}]
             )
             texto_relatorio = resposta.choices[0].message.content.strip()
-            log_ok(f"[5/5] Relatório gerado: {len(texto_relatorio)} caracteres")
         except Exception as e:
-            log_err(f"[5/5] Erro ao gerar relatório com GPT: {e}")
+            st.error(f"Erro ao gerar relatório: {e}")
+            st.stop()
 
-    # 6) Montar DOCX
+    # 6) Montar DOCX: relatório + transcrição completa
     with st.spinner("Gerando DOCX... 📄"):
         doc = Document()
 
