@@ -117,39 +117,57 @@ nome_supervisor = st.text_input("🧑‍🏫 Supervisor(a)")
 data_sessao = st.date_input("📅 Data da Sessão", value=date.today())
 
 if st.button("🚀 Gerar Relatório") and audio_file:
+    log = st.container()
+
+    def log_ok(msg):
+        log.success(msg)
+
+    def log_err(msg):
+        log.error(msg)
+        st.stop()
+
     # 1) Salvar upload
     with st.spinner("Salvando arquivo..."):
         ext = os.path.splitext(audio_file.name)[1].lower()
         with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tmp:
             tmp.write(audio_file.read())
             original_path = tmp.name
+        tamanho_mb = os.path.getsize(original_path) / 1024 / 1024
+        log_ok(f"[1/5] Arquivo salvo: {audio_file.name} ({tamanho_mb:.1f} MB)")
 
-    # 2) Converter p/ MP3 leve (16kHz, mono) — reduz risco de 400/timeout
+    # 2) Converter p/ MP3 leve (16kHz, mono)
     with st.spinner("Convertendo áudio (16 kHz, mono, MP3)..."):
-        mp3_path = converter_para_mp3_mono16k(original_path)
+        try:
+            mp3_path = converter_para_mp3_mono16k(original_path)
+        except Exception as e:
+            log_err(f"[2/5] Erro na conversão ffmpeg: {e}")
         if not mp3_path or not os.path.exists(mp3_path):
-            st.stop()
+            log_err("[2/5] Conversão falhou — verifique se o ffmpeg está instalado no servidor.")
+        tamanho_mp3 = os.path.getsize(mp3_path) / 1024 / 1024
+        log_ok(f"[2/5] Áudio convertido: {tamanho_mp3:.1f} MB")
 
     # 3) Fatiar se for longo
     with st.spinner("Verificando duração e fatiando, se necessário..."):
         dur = duracao_segundos(mp3_path)
+        minutos = int(dur // 60)
         if dur > SEGUNDO_POR_PARTE:
             partes = fatiar_audio(mp3_path, SEGUNDO_POR_PARTE)
+            log_ok(f"[3/5] Duração: {minutos} min — fatiado em {len(partes)} parte(s)")
         else:
             partes = [mp3_path]
+            log_ok(f"[3/5] Duração: {minutos} min — sem necessidade de fatiar")
 
     # 4) Transcrever tudo
-    with st.spinner("Transcrevendo áudio... ⏳"):
+    with st.spinner(f"Transcrevendo {len(partes)} parte(s) com Whisper... ⏳"):
         try:
             texto_transcrito = transcrever_em_partes(partes)
             if not texto_transcrito:
-                st.error("Transcrição ficou vazia.")
-                st.stop()
+                log_err("[4/5] Transcrição ficou vazia — o Whisper não retornou texto.")
+            log_ok(f"[4/5] Transcrição concluída: {len(texto_transcrito)} caracteres")
         except Exception as e:
-            st.error(f"Erro na transcrição: {e}")
-            st.stop()
+            log_err(f"[4/5] Erro na transcrição Whisper: {e}")
 
-    # 5) Gerar relatório com GPT (sem mostrar a transcrição na tela)
+    # 5) Gerar relatório com GPT
     with st.spinner("Gerando relatório com IA... ✨"):
         prompt = f"""
 Você é um psicólogo clínico com foco em descrição comportamental e análise funcional.
@@ -245,11 +263,11 @@ Evolução do paciente:
                 messages=[{"role": "user", "content": prompt}]
             )
             texto_relatorio = resposta.choices[0].message.content.strip()
+            log_ok(f"[5/5] Relatório gerado: {len(texto_relatorio)} caracteres")
         except Exception as e:
-            st.error(f"Erro ao gerar relatório: {e}")
-            st.stop()
+            log_err(f"[5/5] Erro ao gerar relatório com GPT: {e}")
 
-    # 6) Montar DOCX: relatório + transcrição completa
+    # 6) Montar DOCX
     with st.spinner("Gerando DOCX... 📄"):
         doc = Document()
 
