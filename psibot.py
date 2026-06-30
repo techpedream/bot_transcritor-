@@ -3,6 +3,8 @@ from openai import OpenAI
 from docx import Document
 import tempfile
 import os
+import subprocess
+import json
 from datetime import date
 from pathlib import Path
 import shutil
@@ -20,10 +22,6 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 client = OpenAI()
 
 # --- Parametrização de áudio ---
-from pydub import AudioSegment
-from pathlib import Path
-import tempfile
-
 SEGUNDO_POR_PARTE = 600  # 10 minutos
 TARGET_SR = 16000        # 16 kHz
 BITRATE = "48k"          # MP3 leve
@@ -34,46 +32,52 @@ def converter_para_mp3_mono16k(caminho_entrada: str) -> str:
     """Converte qualquer áudio para MP3, 16 kHz, mono, bitrate baixo."""
     caminho_saida = Path(caminho_entrada).with_suffix("").as_posix() + "_proc.mp3"
     try:
-        audio = AudioSegment.from_file(caminho_entrada)
-        audio = audio.set_frame_rate(TARGET_SR).set_channels(1)
-        audio.export(caminho_saida, format="mp3", bitrate=BITRATE)
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", caminho_entrada,
+             "-ar", str(TARGET_SR), "-ac", "1", "-b:a", BITRATE, caminho_saida],
+            check=True, capture_output=True
+        )
         return caminho_saida
     except Exception as e:
         print(f"Erro ao converter áudio: {e}")
         return None
 
 def duracao_segundos(caminho: str) -> float:
-    """Retorna a duração do áudio em segundos."""
+    """Retorna a duração do áudio em segundos via ffprobe."""
     try:
-        audio = AudioSegment.from_file(caminho)
-        return len(audio) / 1000  # pydub retorna duração em milissegundos
+        result = subprocess.run(
+            ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", caminho],
+            capture_output=True, text=True, check=True
+        )
+        info = json.loads(result.stdout)
+        return float(info["format"]["duration"])
     except Exception:
         return 0.0
 
 def fatiar_audio(path_mp3: str, segundos_por_parte: int = SEGUNDO_POR_PARTE) -> list:
-    """
-    Fatia o MP3 em partes de até `segundos_por_parte`.
-    Retorna lista ordenada com caminhos das partes.
-    """
+    """Fatia o MP3 em partes de até `segundos_por_parte`. Retorna lista ordenada com caminhos."""
     try:
-        audio = AudioSegment.from_file(path_mp3)
+        dur = duracao_segundos(path_mp3)
+        if dur == 0:
+            return [path_mp3]
+
         partes = []
         out_dir = Path(tempfile.mkdtemp(prefix="chunks_"))
-        total_ms = len(audio)
-        step_ms = segundos_por_parte * 1000
+        start = 0
+        i = 0
+        while start < dur:
+            i += 1
+            caminho_parte = str(out_dir / f"parte_{i:03d}.mp3")
+            subprocess.run(
+                ["ffmpeg", "-y", "-i", path_mp3,
+                 "-ss", str(start), "-t", str(segundos_por_parte),
+                 "-b:a", BITRATE, caminho_parte],
+                check=True, capture_output=True
+            )
+            partes.append(caminho_parte)
+            start += segundos_por_parte
 
-        for i, start in enumerate(range(0, total_ms, step_ms)):
-            end = min(start + step_ms, total_ms)
-            parte_audio = audio[start:end]
-            caminho_parte = out_dir / f"parte_{i+1:03d}.mp3"
-            parte_audio.export(caminho_parte, format="mp3", bitrate=BITRATE)
-            partes.append(str(caminho_parte))
-
-        # Se por algum motivo não segmentou, devolve o original
-        if not partes:
-            partes = [path_mp3]
-
-        return partes
+        return partes if partes else [path_mp3]
     except Exception as e:
         print(f"Erro ao fatiar áudio: {e}")
         return [path_mp3]
